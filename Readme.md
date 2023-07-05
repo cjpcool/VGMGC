@@ -2,6 +2,19 @@
 
 This is the code of paper: Variational Graph Generator for Multi-View Graph Clustering.
 
+To cite the paper, please refer:
+~~~
+@misc{chen2022variational,
+      title={Variational Graph Generator for Multi-View Graph Clustering}, 
+      author={Jianpeng Chen and Yawen Ling and Jie Xu and Yazhou Ren and Shudong Huang and Xiaorong Pu and Zhifeng Hao and Philip S. Yu and Lifang He},
+      year={2022},
+      eprint={2210.07011},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+}
+~~~
+
+
 # Requirements
 
 - Python 3.8
@@ -54,4 +67,4 @@ python vgmgc.py --dataset 'dblp' --train True --model_name 'vgmgc_dblp1.pkl' --o
 |  Amazon photos   | 66.8 | 58.4 | 78.5 | 76.9 |
 | Amazon computers | 53.5 | 47.5 | 62.2 | 50.2 |
 
-# VGMGC
+
