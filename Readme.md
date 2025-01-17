@@ -4,14 +4,16 @@ This is the code of paper: Variational Graph Generator for Multi-View Graph Clus
 
 To cite the paper, please refer:
 ~~~
-@misc{chen2022variational,
-      title={Variational Graph Generator for Multi-View Graph Clustering}, 
-      author={Jianpeng Chen and Yawen Ling and Jie Xu and Yazhou Ren and Shudong Huang and Xiaorong Pu and Zhifeng Hao and Philip S. Yu and Lifang He},
-      year={2022},
-      eprint={2210.07011},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
-}
+@ARTICLE{10833915,
+  author={Chen, Jianpeng and Ling, Yawen and Xu, Jie and Ren, Yazhou and Huang, Shudong and Pu, Xiaorong and Hao, Zhifeng and Yu, Philip S. and He, Lifang},
+  journal={IEEE Transactions on Neural Networks and Learning Systems}, 
+  title={Variational Graph Generator for Multiview Graph Clustering}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={1-14},
+  doi={10.1109/TNNLS.2024.3524205}}
+
 ~~~
 
 
