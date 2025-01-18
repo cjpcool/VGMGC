@@ -5,6 +5,21 @@ from vgmgc import cuda_devicefrom torch.distributed.pipeline.sync.stream import 
 This is the code of paper: Variational Graph Generator for Multi-View Graph Clustering.
 
 
+We sincerely appreciate it if you cite this paper as: 
+~~~
+@ARTICLE{10833915,
+  author={Chen, Jianpeng and Ling, Yawen and Xu, Jie and Ren, Yazhou and Huang, Shudong and Pu, Xiaorong and Hao, Zhifeng and Yu, Philip S. and He, Lifang},
+  journal={IEEE Transactions on Neural Networks and Learning Systems}, 
+  title={Variational Graph Generator for Multiview Graph Clustering}, 
+  year={2025},
+  volume={},
+  number={},
+  pages={1-14},
+  doi={10.1109/TNNLS.2024.3524205}}
+
+~~~
+
+
 # Requirements
 
 - Python >= 3.8
@@ -91,18 +106,3 @@ python vgmgc.py --dataset bbcsport_2view --train true  --order 2 --weight_soft 1
 | BBC sport | 94.6 | 95.1 | 98.3 | 98.6 |
 | 3sources  | 86.5 | 88.1 | 94.7 | 93.5 |
 
-
-# Citations
-We sincerely appreciate you if you cite this paper as: 
-~~~
-@ARTICLE{10833915,
-  author={Chen, Jianpeng and Ling, Yawen and Xu, Jie and Ren, Yazhou and Huang, Shudong and Pu, Xiaorong and Hao, Zhifeng and Yu, Philip S. and He, Lifang},
-  journal={IEEE Transactions on Neural Networks and Learning Systems}, 
-  title={Variational Graph Generator for Multiview Graph Clustering}, 
-  year={2025},
-  volume={},
-  number={},
-  pages={1-14},
-  doi={10.1109/TNNLS.2024.3524205}}
-
-~~~
