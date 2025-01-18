@@ -7,7 +7,7 @@ import torch.nn.functional as F
 from sklearn.cluster import KMeans
 
 from evaluation import eva
-from utils import load_data, normalize_weight, elbo_kl_loss
+from utils import load_data, normalize_weight, elbo_kl_loss, compute_ppr, sample_graph
 from torch.optim import Adam
 from models import MultiGraphAutoEncoder
 
@@ -17,8 +17,8 @@ from models import MultiGraphAutoEncoder
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', type=str, default='acm', help='acm, dblp, amazon_photos, amazon_computers')
-parser.add_argument('--train', type=bool, default=False, help='training mode')
+parser.add_argument('--dataset', type=str, default='acm', help='acm, dblp, cora, citeseer, amazon_photos, amazon_computers, 3sources, bbcsport_2view')
+parser.add_argument('--train', type=str, default='False', help='training mode')
 parser.add_argument('--model_name', type=str, default='vgmgc_acm.pkl', help='model name')
 
 parser.add_argument('--path', type=str, default='./data/', help='')
@@ -41,15 +41,14 @@ parser.add_argument('--patience', type=int, default=100, help='')
 parser.add_argument('--lr', type=float, default=1e-3, help='')
 parser.add_argument('--weight_decay', type=float, default=5e-4, help='')
 parser.add_argument('--cuda_device', type=int, default=0, help='')
-parser.add_argument('--use_cuda', type=bool, default=False, help='')
+parser.add_argument('--use_cuda', type=str, default='True', help='')
 parser.add_argument('--update_interval', type=int, default=3, help='')
 parser.add_argument('--random_seed', type=int, default=2023, help='')
-parser.add_argument('--add_graph', type=bool, default=True, help='')
+parser.add_argument('--add_graph', type=str, default='True', help='')
 
 
 args = parser.parse_args()
-
-train = args.train
+train = True if (args.train == 'True' or args.train == 'true' or args.train == '1') else False
 dataset = args.dataset
 path = args.path
 order = args.order
@@ -62,7 +61,7 @@ lam_emd = args.lam_emd
 lam_elbo_kl = args.lam_elbo_kl
 threshold = args.threshold
 
-add_graph=args.add_graph
+add_graph=True if (args.add_graph == 'True' or args.add_graph == 'true' or args.add_graph == '1') else False
 hidden_dim = args.hidden_dim
 latent_dim = args.latent_dim
 epoch = args.epoch
@@ -71,7 +70,7 @@ lr = args.lr
 weight_decay = args.weight_decay
 temprature = args.temperature
 cuda_device = args.cuda_device
-use_cuda = args.use_cuda
+use_cuda = True if (args.use_cuda == 'True' or args.use_cuda == 'true' or args.use_cuda == '1') else False
 update_interval = args.update_interval
 random_seed = args.random_seed
 
@@ -80,14 +79,24 @@ torch.manual_seed(random_seed)
 EPS = 1e-10
 
 
+print(args.train, use_cuda)
 # ============================ 2.dataset and model preparing ==========================
 labels, adjs, features, adjs_labels, feature_labels, shared_feature, shared_feature_label, graph_num = load_data(dataset, path)
-
+if dataset in ['cora', 'citeseer', 'pubmed']:
+    adjs = [adjs[0]]
+    adjs_labels = [adjs_labels[0]]
+    if add_graph:
+        # drop_adj, drop_adj_labels = sample_graph(adjs_labels[0]*1.0, drop_rate=0.6)
+        print(adjs_labels)
+        ppr_adj, ppr_adj_labels = compute_ppr(adjs_labels[0].cpu().numpy(), dataset=dataset)
+        adjs.append(ppr_adj)
+        adjs_labels.append(ppr_adj_labels)
+    graph_num = len(adjs)
 
 adjs = [a.to_sparse() for a in adjs]
 adjs_labels = [a.to_sparse() for a in adjs_labels]
 
-class_num = labels.max()+1
+class_num = labels.max().item()+1
 feat_dim = [d.shape[1] for d in features]
 feat_dim.append(shared_feature.shape[1])
 node_num = features[0].shape[0]
@@ -142,6 +151,7 @@ y = labels.cpu().numpy()
 
 # ============================ 3.Training ==========================
 if train:
+    print('Start Training...')
     with torch.no_grad():
         model.eval()
         zs = []
@@ -197,8 +207,11 @@ if train:
             qs.append(q)
             x_preds.append(x_pred.unsqueeze(0))
 
-            re_loss += F.binary_cross_entropy(A_pred.view(-1), adjs_labels[v].to_dense().view(-1))
-            re_feat_loss += F.binary_cross_entropy(x_pred.view(-1), feature_labels[v].view(-1))
+            re_loss += F.binary_cross_entropy(A_pred.view(-1), adjs_labels[v].to_dense().view(-1)) \
+                if torch.any(~(torch.eq(adjs_labels[v].values(), 1.) & torch.eq(adjs_labels[v].values(), 0.))) else F.nll_loss(A_pred.view(-1), adjs_labels[v].to_dense().view(-1))
+
+            re_feat_loss += F.binary_cross_entropy(x_pred.view(-1), feature_labels[v].view(-1)) \
+                if torch.any(~(torch.eq(feature_labels[v], 1.) & torch.eq(feature_labels[v], 0.))) else F.nll_loss(x_pred, feature_labels[v])
 
             re_global_feat_loss += F.binary_cross_entropy(x_global_pred.view(-1), shared_feature_label.view(-1))
             re_feat_loss += re_global_feat_loss
@@ -253,7 +266,7 @@ if train:
         optimizer.step()
 
     # ============================ 4.evaluation ==========================
-        if epoch_num % update_interval == 0:
+        if (epoch_num) % update_interval == 0:
             model.eval()
             with torch.no_grad():
                 zs = []
