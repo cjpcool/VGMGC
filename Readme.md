@@ -1,5 +1,5 @@
 
-# VGMGC
+# VGMGC: Variational Graph Generator for Multi-View Graph Clustering
 
 This is the code of paper: Variational Graph Generator for Multi-View Graph Clustering.
 
