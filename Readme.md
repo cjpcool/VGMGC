@@ -4,7 +4,7 @@
 This is the code of paper: Variational Graph Generator for Multi-View Graph Clustering.
 
 
-We sincerely appreciate it if you cite this paper as: 
+We sincerely appreciate it if you cite this paper as
 ~~~
 @ARTICLE{10833915,
   author={Chen, Jianpeng and Ling, Yawen and Xu, Jie and Ren, Yazhou and Huang, Shudong and Pu, Xiaorong and Hao, Zhifeng and Yu, Philip S. and He, Lifang},
@@ -15,7 +15,6 @@ We sincerely appreciate it if you cite this paper as:
   number={},
   pages={1-14},
   doi={10.1109/TNNLS.2024.3524205}}
-
 ~~~
 
 
